@@ -32,6 +32,7 @@ def mutate(parent):
 def display(guess):
     timeDiff = datetime.datetime.now() - startTime
     fitness = get_fitness(guess)
+    print("{}\t{}\t{}".format(guess, fitness, timeDiff))
     label_result.config(text="{}\t{}\t{}".format(guess, fitness, timeDiff))
 
 def get_input():
@@ -45,6 +46,7 @@ def reset_game():
     target = ''
     startTime = None
     label_result.config(text="")
+    label_last_letter.config(text="")
     entry_word.delete(0, 'end')
 
 def submit_word():
@@ -52,15 +54,15 @@ def submit_word():
 
     user_input = get_input()
 
-    if len(user_input) < 2 and user_input != "e":
+    if len(user_input) <= 1:
         label_result.config(text="Please enter a word with at least 2 letters.")
         return
     elif user_input not in words.words():
         label_result.config(text="Please enter a valid word.")
         return
-    elif user_input == "e":
-        label_result.config(text="Exiting...")
-        return
+        '''elif user_input == "e":
+            label_result.config(text="Exiting...")
+            return'''
     elif original_counter > 0 and last_letter != user_input[0].lower():
         label_result.config(text="You lose!")
         return
@@ -87,25 +89,44 @@ def submit_word():
 
         generation_count += 1
 
-    label_result.config(text="Word found: {}".format(child))
+    label_result.config(text=format(child))
+    entry_word.delete(0, 'end')  # Clear entry_word
     last_letter = child[-1].lower()
+    label_last_letter.config(text=format(last_letter))
     original_counter += 1
 
 # GUI
 master = Tk()
 master.title("Word Game")
+#master.geometry("320x90")
 
 Label(master, text='Enter a word:').grid(row=0, column=0)
 entry_word = Entry(master)
 entry_word.grid(row=0, column=1)
+#bind the enter key to the submit function
+master.bind('<Return>', lambda event=None: button_submit.invoke())
 
-button_submit = Button(master, text="Submit", command=submit_word)
-button_submit.grid(row=1, column=1)
-
-button_play_again = Button(master, text="Play Again", command=reset_game)
-button_play_again.grid(row=2, column=1)
-
+Label(master, text='Word found:').grid(row=1, column=0)
 label_result = Label(master, text="")
-label_result.grid(row=3, column=1)
+label_result.grid(row=1, column=1)
+
+Label(master, text='Last letter:').grid(row=2, column=0)
+label_last_letter = Label(master, text="")
+label_last_letter.grid(row=2, column=1)
+
+button_submit = Button(master, text="Submit", command=submit_word, fg='blue')
+button_submit.grid(row=0, column=3)
+#bind the 1 key to the submit function
+master.bind('1', lambda event=None: button_submit.invoke())
+
+button_clear = Button(master, text="Clear", command=lambda: entry_word.delete(0, 'end'), fg='blue')
+button_clear.grid(row=1, column=3)
+#bind the 2 key to the clear function
+master.bind('2', lambda event=None: button_clear.invoke())
+
+button_play_again = Button(master, text="Restart", command=reset_game, fg='blue')
+button_play_again.grid(row=2, column=3)
+#bind the 3 key to the restart function
+master.bind('3', lambda event=None: button_play_again.invoke())
 
 master.mainloop()
