@@ -1,6 +1,11 @@
 import random
 import datetime
+
+#Từ điển tiếng Anh
 import nltk
+
+#GUI
+import tkinter as tk
 
 # Download the words dataset
 #nltk.download('words')
@@ -87,7 +92,3 @@ while True:
     print("last letter: {}".format(last_letter))
     original_counter += 1
     print("Original counter: {}".format(original_counter))
-        
-
-
-    
